@@ -16,7 +16,7 @@
 
     var config = {
         type: Phaser.AUTO,
-        width: 1920,
+        width: 1080,
         height: 1080,
         physics: {
             default: 'arcade',
@@ -37,7 +37,10 @@
     var player;
     var cursors;
     var enemies;
+    var enemy_temp_var;
     var fire_bool = false; //bool to prevent auto fire
+    var gameover = false;
+    var game_over_text;
 
     function preload ()
     {
@@ -49,12 +52,34 @@
         load_walls(this);
         create_player(this);
         cursors = this.input.keyboard.createCursorKeys();
+
+        game_over_text = this.add.text(300, 300, '', {fontSize: '64px', fill: 'red'});
+
+        load_enemies(this);
+       
     }
 
     function update ()
     {
+        if (gameover) {
+            game_over_text.setText('GAME OVER');
+            enemies.children.iterate(function(child) {
+                child.disableBody(true, true);
+            });
+            player.disableBody(true, true);
+            return;
+        }
         movement();
         projectile_movement(player.projectile_speed);
+        if(Phaser.Math.Between(0, 100) % 30 == 0) {
+            create_enemies()
+        }
+
+        enemies.children.iterate(function(child) {
+                if(child.x < 0) {
+                    child.disableBody(true, true);
+                }
+        });
     }
 
     function load_assets(game) 
@@ -62,6 +87,7 @@
         game.load.image('wall_01', 'assets/space-junk_01.png');
         game.load.spritesheet('ship', 'assets/ship-one.png', {frameWidth: 32, frameHeight: 32});
         game.load.image('zero-bullet', 'assets/zero-bullet.png');
+        game.load.image('enemy_01', 'assets/enemy_01.png');
     }
 
     function movement() 
@@ -211,11 +237,28 @@
         player_animations(game);
         player_projectiles = game.physics.add.group();
         game.physics.add.collider(player, walls);
-        game.physics.add.overlap(walls, player_projectiles, function(player, projectile) {
+        game.physics.add.overlap(walls, player_projectiles, function(wall, projectile) {
             projectile.disableBody(true, true);
         }, null, this);
         player.speed = 200;
         player.projectile_speed = 500;
+    }
+    
+    function load_enemies(game) {
+        enemies = game.physics.add.group();
+        game.physics.add.overlap(enemies, player, function(enemy, player) {
+            gameover = true;
+        },null, game);
+        game.physics.add.overlap(enemies, player_projectiles, function(enemy, projectile) {
+            enemy.disableBody(true, true);
+        }, null, game);
+        game.physics.add.collider(enemies, walls);
+    }
+
+    function create_enemies() {
+        var y = Phaser.Math.Between(250, 450);
+        var enemy = enemies.create(1080, y, 'enemy_01');
+        enemy.setVelocityX(-100);
     }
 
     function load_walls(game) 
@@ -223,25 +266,18 @@
         var wall_length = 128;
         walls = game.physics.add.staticGroup();
 
-//Top solid row
-        walls.create(400, 200, 'wall_01');        
-        walls.create(400 + wall_length * 1, 200, 'wall_01');
-        walls.create(400 + wall_length * 2, 200, 'wall_01');
-        walls.create(400 + wall_length * 3, 200, 'wall_01');
-        walls.create(400 + wall_length * 4, 200, 'wall_01');
-        walls.create(400 + wall_length * 5, 200, 'wall_01');
-        walls.create(400 + wall_length * 6, 200, 'wall_01');
-        walls.create(400 + wall_length * 7, 200, 'wall_01');
+//Top solid row      
+        walls.create(200 + wall_length * 1, 200, 'wall_01');
+        walls.create(200 + wall_length * 2, 200, 'wall_01');
+        walls.create(200 + wall_length * 3, 200, 'wall_01');
+        walls.create(200 + wall_length * 4, 200, 'wall_01');
 
-//Middle slalom row
-        walls.create(200, 500, 'wall_01');        
-        walls.create(400, 500, 'wall_01');
-        walls.create(600, 500, 'wall_01');        
-        walls.create(800, 500, 'wall_01');
-        walls.create(1000, 500, 'wall_01');        
-        walls.create(1200, 500, 'wall_01');
-        walls.create(1400, 500, 'wall_01');        
-        walls.create(1600, 500, 'wall_01');
+//Middle slalom row    
+        walls.create(100, 500, 'wall_01');
+        walls.create(300, 500, 'wall_01');        
+        walls.create(500, 500, 'wall_01');
+        walls.create(700, 500, 'wall_01');        
+        walls.create(900, 500, 'wall_01');
     }
 
 </script>
