@@ -44,6 +44,8 @@
     var fire_bool = false; //bool to prevent auto fire
     var gameover = false;
     var game_over_text;
+    var lock_position = false;
+    var lock_key;
 
     function preload ()
     {
@@ -55,7 +57,7 @@
         load_walls(this);
         create_player(this);
         cursors = this.input.keyboard.createCursorKeys();
-
+        lock_key = this.input.keyboard.addKey('Shift');
         game_over_text = this.add.text(300, 300, '', {fontSize: '64px', fill: 'red'});
 
         load_enemies(this);
@@ -95,42 +97,64 @@
 
     function movement() 
     {
+        if(lock_key.isDown) {
+            lock_position = true;
+        } else {
+            lock_position = false;
+        }
+
         if(cursors.right.isDown) {
             if(cursors.up.isDown) {
                 player.setVelocityX(player.speed);
                 player.setVelocityY(-player.speed);
-                player.anims.play('up-right')
+                if(!lock_position) {
+                    player.anims.play('up-right')
+                }
             } else if(cursors.down.isDown) {
                 player.setVelocityX(player.speed);
                 player.setVelocityY(player.speed);
-                player.anims.play('down-right')
+                if(!lock_position) {
+                    player.anims.play('down-right')
+                }
             } else {
                 player.setVelocityX(player.speed);
                 player.setVelocityY(0);
-                player.anims.play('right');
+                if(!lock_position) {
+                    player.anims.play('right');
+                }
             }
         } else if(cursors.left.isDown) {
             if(cursors.up.isDown) {
                 player.setVelocityX(-player.speed);
                 player.setVelocityY(-player.speed);
-                player.anims.play('up-left')
+                if(!lock_position) {
+                    player.anims.play('up-left')
+                }
             } else if(cursors.down.isDown) {
                 player.setVelocityX(-player.speed);
                 player.setVelocityY(player.speed);
-                player.anims.play('down-left')
+                if(!lock_position) {
+                    player.anims.play('down-left');
+                }
             } else {
                 player.setVelocityX(-player.speed);
                 player.setVelocityY(0);
-                player.anims.play('left');
+                if(!lock_position) {
+                    player.anims.play('left');
+                }
             }
         } else if(cursors.up.isDown) {
             player.setVelocityY(-player.speed);
             player.setVelocityX(0);
-            player.anims.play('up');
+            if(!lock_position) {
+                player.anims.play('up');
+            }
         } else if(cursors.down.isDown) {
             player.setVelocityY(player.speed);
             player.setVelocityX(0);
-            player.anims.play('down');
+            if(!lock_position) {
+                player.anims.play('down');
+            }
         } else {
             player.setVelocityX(0);
             player.setVelocityY(0);
