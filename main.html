@@ -3,15 +3,14 @@
 <head> 
     <meta charset="UTF-8" />
     <title>First Go</title>
-    <script src="//cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.19.0/dist/phaser.js"></script>
     <style type="text/css">
         body {
             margin: 0;
         }
     </style>
 </head>
-<body>
-
+<body id="game-body">
 <script type="text/javascript">
 
     var config = {
@@ -29,6 +28,10 @@
             preload: preload,
             create: create,
             update: update
+        },
+        scale: {
+            parent: 'game-body',
+            autoCenter: Phaser.Scale.CENTER_BOTH
         }
     };
 
